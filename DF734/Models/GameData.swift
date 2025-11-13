@@ -15,6 +15,8 @@ struct GameStatistics: Codable {
     var stepTimingBestScore: Int = 0
     var featherCatchBestScore: Int = 0
     var bridgeBalanceBestScore: Int = 0
+    var spaceBattleBestScore: Int = 0
+    var memoryMatchBestScore: Int = 0
     
     mutating func addFeathers(_ count: Int) {
         totalFeathers += count
@@ -38,6 +40,14 @@ struct GameStatistics: Codable {
             if score > bridgeBalanceBestScore {
                 bridgeBalanceBestScore = score
             }
+        case .spaceBattle:
+            if score > spaceBattleBestScore {
+                spaceBattleBestScore = score
+            }
+        case .memoryMatch:
+            if score > memoryMatchBestScore {
+                memoryMatchBestScore = score
+            }
         }
     }
     
@@ -47,6 +57,8 @@ struct GameStatistics: Codable {
         stepTimingBestScore = 0
         featherCatchBestScore = 0
         bridgeBalanceBestScore = 0
+        spaceBattleBestScore = 0
+        memoryMatchBestScore = 0
     }
 }
 
@@ -55,6 +67,8 @@ enum MiniGameType: String, CaseIterable {
     case stepTiming = "Step Timing"
     case featherCatch = "Feather Catch"
     case bridgeBalance = "Bridge Balance"
+    case spaceBattle = "Space Battle"
+    case memoryMatch = "Card Match"
     
     var description: String {
         switch self {
@@ -64,6 +78,10 @@ enum MiniGameType: String, CaseIterable {
             return "Swipe to collect falling feathers"
         case .bridgeBalance:
             return "Keep balance on a wobbly bridge"
+        case .spaceBattle:
+            return "Dodge enemies and shoot to survive"
+        case .memoryMatch:
+            return "Match pairs of cards to win"
         }
     }
     
@@ -75,6 +93,10 @@ enum MiniGameType: String, CaseIterable {
             return "leaf.fill"
         case .bridgeBalance:
             return "arrow.left.and.right"
+        case .spaceBattle:
+            return "airplane"
+        case .memoryMatch:
+            return "square.on.square"
         }
     }
     
@@ -86,6 +108,10 @@ enum MiniGameType: String, CaseIterable {
             return Color(hex: "#E85A4F")
         case .bridgeBalance:
             return Color(hex: "#F6D547")
+        case .spaceBattle:
+            return Color(hex: "#5A9FD4")
+        case .memoryMatch:
+            return Color(hex: "#9B59B6")
         }
     }
 }

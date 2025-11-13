@@ -37,54 +37,11 @@ struct MiniGamesScreen: View {
                     .offset(y: animateContent ? 0 : -20)
                     
                     // Adaptive games grid
-                    GeometryReader { geometry in
-                        let isCompact = geometry.size.width < 700
-                        
-                        if isCompact {
-                            // iPhone: vertical list
-                            VStack(spacing: 16) {
-                                ForEach(MiniGameType.allCases, id: \.self) { game in
-                                    MiniGameCard(game: game) {
-                                        selectedGame = game
-                                    }
-                                    .opacity(animateContent ? 1 : 0)
-                                    .offset(x: animateContent ? 0 : -30)
-                                }
-                            }
-                        } else {
-                            // iPad: grid layout
-                            VStack(spacing: 16) {
-                                HStack(spacing: 16) {
-                                    ForEach(Array(MiniGameType.allCases.prefix(2)), id: \.self) { game in
-                                        MiniGameCard(game: game) {
-                                            selectedGame = game
-                                        }
-                                        .opacity(animateContent ? 1 : 0)
-                                        .offset(x: animateContent ? 0 : -30)
-                                    }
-                                }
-                                
-                                if MiniGameType.allCases.count > 2 {
-                                    HStack(spacing: 16) {
-                                        ForEach(Array(MiniGameType.allCases.dropFirst(2)), id: \.self) { game in
-                                            MiniGameCard(game: game) {
-                                                selectedGame = game
-                                            }
-                                            .opacity(animateContent ? 1 : 0)
-                                            .offset(x: animateContent ? 0 : -30)
-                                        }
-                                        
-                                        // Spacer for odd number of games
-                                        if MiniGameType.allCases.count % 2 != 0 {
-                                            Spacer()
-                                                .frame(maxWidth: .infinity)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    .frame(minHeight: 550) // Ensure GeometryReader has proper height
+                    AdaptiveGameGrid(
+                        games: MiniGameType.allCases,
+                        animateContent: animateContent,
+                        selectedGame: $selectedGame
+                    )
                     .padding(.horizontal, 20)
                     
                     Spacer()
@@ -109,6 +66,10 @@ struct MiniGamesScreen: View {
                             FeatherCatchGame(isPresented: $selectedGame)
                         case .bridgeBalance:
                             BridgeBalanceGame(isPresented: $selectedGame)
+                        case .spaceBattle:
+                            SpaceBattleGame(isPresented: $selectedGame)
+                        case .memoryMatch:
+                            MemoryMatchGame(isPresented: $selectedGame)
                         }
                     }
                     .transition(.scale.combined(with: .opacity))
@@ -131,6 +92,73 @@ struct MiniGamesScreen: View {
             .environmentObject(GameManager())
     }
 }
+
+// MARK: - Adaptive Game Grid
+struct AdaptiveGameGrid: View {
+    let games: [MiniGameType]
+    let animateContent: Bool
+    @Binding var selectedGame: MiniGameType?
+    
+    var body: some View {
+        GeometryReader { geometry in
+            let isCompact = geometry.size.width < 700
+            
+            if isCompact {
+                // iPhone: vertical list
+                VStack(spacing: 16) {
+                    ForEach(games, id: \.self) { game in
+                        MiniGameCard(game: game) {
+                            selectedGame = game
+                        }
+                        .opacity(animateContent ? 1 : 0)
+                        .offset(x: animateContent ? 0 : -30)
+                    }
+                }
+            } else {
+                // iPad: grid layout
+                VStack(spacing: 16) {
+                    ForEach(0..<((games.count + 1) / 2), id: \.self) { rowIndex in
+                        HStack(spacing: 16) {
+                            let startIndex = rowIndex * 2
+                            let endIndex = min(startIndex + 2, games.count)
+                            
+                            ForEach(startIndex..<endIndex, id: \.self) { index in
+                                MiniGameCard(game: games[index]) {
+                                    selectedGame = games[index]
+                                }
+                                .opacity(animateContent ? 1 : 0)
+                                .offset(x: animateContent ? 0 : -30)
+                            }
+                            
+                            // Add spacer if odd number in last row
+                            if endIndex - startIndex == 1 {
+                                Color.clear
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .frame(minHeight: calculateMinHeight())
+    }
+    
+    func calculateMinHeight() -> CGFloat {
+        let cardHeight: CGFloat = 160
+        let spacing: CGFloat = 16
+        let isCompact = UIScreen.main.bounds.width < 700
+        
+        if isCompact {
+            // Vertical list: height = number of cards * (card height + spacing)
+            return CGFloat(games.count) * (cardHeight + spacing)
+        } else {
+            // Grid: height = number of rows * (card height + spacing)
+            let rows = (games.count + 1) / 2
+            return CGFloat(rows) * (cardHeight + spacing)
+        }
+    }
+}
+
 
 
 

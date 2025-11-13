@@ -51,7 +51,7 @@ class GameManager: ObservableObject {
         saveStatistics()
     }
     
-    private func saveStatistics() {
+    func saveStatistics() {
         if let encoded = try? JSONEncoder().encode(statistics) {
             UserDefaults.standard.set(encoded, forKey: statisticsKey)
         }

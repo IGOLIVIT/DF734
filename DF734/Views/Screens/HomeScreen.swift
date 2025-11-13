@@ -60,29 +60,46 @@ struct HomeScreen: View {
                         .opacity(animateContent ? 1 : 0)
                 }
                 
-                Spacer()
-                    .frame(height: 20)
-                
-                // Stats preview
-                HStack(spacing: 20) {
-                    StatPreviewCard(
-                        icon: "leaf.fill",
-                        value: "\(gameManager.statistics.totalFeathers)",
-                        label: "Feathers"
-                    )
+                // Stats Grid
+                VStack(spacing: 16) {
+                    HStack(spacing: 16) {
+                        StatPreviewCard(
+                            icon: "leaf.fill",
+                            value: "\(gameManager.statistics.totalFeathers)",
+                            label: "Feathers",
+                            color: AppTheme.primaryButton
+                        )
+                        
+                        StatPreviewCard(
+                            icon: "checkmark.circle.fill",
+                            value: "\(gameManager.statistics.gamesCompleted)",
+                            label: "Completed",
+                            color: AppTheme.accent
+                        )
+                    }
                     
-                    StatPreviewCard(
-                        icon: "checkmark.circle.fill",
-                        value: "\(gameManager.statistics.gamesCompleted)",
-                        label: "Completed"
-                    )
+                    HStack(spacing: 16) {
+                        StatPreviewCard(
+                            icon: "gamecontroller.fill",
+                            value: "5",
+                            label: "Games",
+                            color: Color(hex: "#5A9FD4")
+                        )
+                        
+                        StatPreviewCard(
+                            icon: "trophy.fill",
+                            value: "\(highestScore)",
+                            label: "Best Score",
+                            color: Color(hex: "#9B59B6")
+                        )
+                    }
                 }
                 .padding(.horizontal, 30)
                 .offset(y: animateContent ? 0 : 30)
                 .opacity(animateContent ? 1 : 0)
                 
                 Spacer()
-                    .frame(height: 30)
+                    .frame(height: 20)
                 
                 // Play button
                 CustomButton(
@@ -96,7 +113,7 @@ struct HomeScreen: View {
                     }
                 }
                 .padding(.horizontal, 40)
-                .offset(y: animateContent ? 0 : 30)
+                .offset(y: animateContent ? 0 : 40)
                 .opacity(animateContent ? 1 : 0)
                 
                 Spacer()
@@ -109,18 +126,29 @@ struct HomeScreen: View {
             }
         }
     }
+    
+    var highestScore: Int {
+        max(
+            gameManager.statistics.stepTimingBestScore,
+            gameManager.statistics.featherCatchBestScore,
+            gameManager.statistics.bridgeBalanceBestScore,
+            gameManager.statistics.spaceBattleBestScore,
+            gameManager.statistics.memoryMatchBestScore
+        )
+    }
 }
 
 struct StatPreviewCard: View {
     let icon: String
     let value: String
     let label: String
+    let color: Color
     
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: icon)
                 .font(.system(size: 24, weight: .semibold))
-                .foregroundColor(AppTheme.primaryButton)
+                .foregroundColor(color)
             
             Text(value)
                 .font(.system(size: 24, weight: .bold))
@@ -138,7 +166,7 @@ struct StatPreviewCard: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                .stroke(color.opacity(0.3), lineWidth: 1)
         )
     }
 }

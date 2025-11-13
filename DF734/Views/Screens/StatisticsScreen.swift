@@ -80,6 +80,18 @@ struct StatisticsScreen: View {
                             score: gameManager.statistics.bridgeBalanceBestScore,
                             icon: "arrow.left.and.right"
                         )
+                        
+                        BestScoreRow(
+                            gameName: "Space Battle",
+                            score: gameManager.statistics.spaceBattleBestScore,
+                            icon: "airplane"
+                        )
+                        
+                        BestScoreRow(
+                            gameName: "Card Match",
+                            score: gameManager.statistics.memoryMatchBestScore,
+                            icon: "square.on.square"
+                        )
                     }
                     .padding(.horizontal, 20)
                 }
